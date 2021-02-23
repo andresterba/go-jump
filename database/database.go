@@ -3,10 +3,17 @@ package database
 import (
 	"bufio"
 	"errors"
-	"log"
 	"os"
 	"sort"
 	"strings"
+)
+
+var (
+	ErrNotFound             = errors.New("item could not be found in the store")
+	ErrCouldNotPersist      = errors.New("could not persist database")
+	ErrCouldNotOpenFile     = errors.New("could not open database file")
+	ErrCouldNotWriteFile    = errors.New("could not write database file")
+	ErrWhileReadingDatabase = errors.New("could not read database")
 )
 
 // Database represents to database file
@@ -28,9 +35,14 @@ func (database *Database) sortDatabase() {
 }
 
 func (database *Database) readDatabase() error {
+	// Flush EntryList as we can only read or write the hole database.
+	// This ensures that the entries are only read once and therefore exists only
+	// once in the database.
+	database.flushEntryList()
+
 	file, err := os.Open(database.Path)
 	if err != nil {
-		return err
+		return ErrCouldNotOpenFile
 	}
 
 	defer file.Close()
@@ -40,13 +52,13 @@ func (database *Database) readDatabase() error {
 	for fileScanner.Scan() {
 		line := fileScanner.Text()
 		splittedLine := strings.Split(line, " ")
+
 		dbEntry := NewEntry(splittedLine[0], splittedLine[1])
-		// fmt.Printf("%v", dbEntry)
 		database.EntryList = append(database.EntryList, dbEntry)
 	}
 
 	if err := fileScanner.Err(); err != nil {
-		return errors.New("error while reading database")
+		return ErrWhileReadingDatabase
 	}
 
 	return nil
@@ -61,7 +73,7 @@ func (database *Database) Persist() error {
 
 	file, err := os.OpenFile(database.Path, os.O_CREATE|os.O_WRONLY, 0600)
 	if err != nil {
-		log.Fatal(err)
+		return ErrCouldNotOpenFile
 	}
 
 	for _, databaseEntry := range database.EntryList {
@@ -69,7 +81,7 @@ func (database *Database) Persist() error {
 
 		_, err = file.Write([]byte(databaseEntry.getWritableFormat() + "\n"))
 		if err != nil {
-			log.Fatal(err)
+			return ErrCouldNotWriteFile
 		}
 	}
 
@@ -93,7 +105,7 @@ func (database *Database) AddEntry(path string) error {
 
 	err := database.Persist()
 	if err != nil {
-		return err
+		return ErrCouldNotPersist
 	}
 
 	return nil
@@ -116,5 +128,20 @@ func (database *Database) FindEntry(path string) (string, error) {
 		}
 	}
 
-	return "", errors.New("not found")
+	return "", ErrNotFound
+}
+
+// GetAllEntriesAsString gets all entries currently in the database as string.
+func (database *Database) GetAllEntriesAsString() ([]string, error) {
+	var currentDatabaseEntriesAsString []string
+
+	for _, entry := range database.EntryList {
+		currentDatabaseEntriesAsString = append(currentDatabaseEntriesAsString, entry.getWritableFormat())
+	}
+
+	return currentDatabaseEntriesAsString, nil
+}
+
+func (database *Database) flushEntryList() {
+	database.EntryList = []*Entry{}
 }

@@ -1,6 +1,8 @@
 package commands
 
-import "fmt"
+import (
+	"fmt"
+)
 
 func GetHit(path string) (string, error) {
 	foundPath, err := db.FindEntry(path)
@@ -11,6 +13,16 @@ func GetHit(path string) (string, error) {
 	return foundPath, nil
 }
 
-func Show() {
-	fmt.Println("Not implemented yet!")
+func Show() error {
+
+	entries, err := db.GetAllEntriesAsString()
+	if err != nil {
+		return err
+	}
+
+	for _, entry := range entries {
+		fmt.Printf("%s\n", entry)
+	}
+
+	return nil
 }
