@@ -4,7 +4,8 @@ import (
 	"fmt"
 )
 
-func GetHit(path string) (string, error) {
+// SearchForDatabaseHit search for a hit in the database
+func SearchForDatabaseHit(path string) (string, error) {
 	foundPath, err := db.FindEntry(path)
 	if err != nil {
 		return foundPath, err
@@ -13,8 +14,8 @@ func GetHit(path string) (string, error) {
 	return foundPath, nil
 }
 
-func Show() error {
-
+// ShowCurrentEntriesInDatabase prints all entries in the database
+func ShowCurrentEntriesInDatabase() error {
 	entries, err := db.GetAllEntriesAsString()
 	if err != nil {
 		return err

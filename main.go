@@ -74,14 +74,14 @@ func run(args []string) error {
 		break
 
 	case "show":
-		err = commands.Show()
+		err = commands.ShowCurrentEntriesInDatabase()
 		if err != nil {
 			return err
 		}
 		break
 
 	default:
-		foundPath, err := commands.GetHit(command)
+		foundPath, err := commands.SearchForDatabaseHit(command)
 		checkErrorAndLogAndFail(err)
 
 		fmt.Printf("%s\n", foundPath)
