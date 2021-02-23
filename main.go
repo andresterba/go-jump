@@ -20,6 +20,10 @@ commands:
 `)
 }
 
+const (
+	databaseFileName = ".go-jump.db"
+)
+
 // isInputValid checks if a given input contains at least
 // a single slash (which makes it a valid path).
 func isInputValid(input string) bool {
@@ -40,6 +44,12 @@ func run(args []string) error {
 	}
 
 	command := args[1]
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return err
+	}
+
+	commands.RegisterDatabase(home + "/" + databaseFileName)
 
 	switch command {
 	case "add":
@@ -48,10 +58,14 @@ func run(args []string) error {
 			os.Exit(1)
 		}
 
+		// TODO: Do not add $HOME
+
 		path := args[2]
 		if isInputValid(path) {
 			err := commands.Add(path)
-			checkErrorAndLogAndFail(err)
+			if err != nil {
+				return err
+			}
 
 			break
 		}
@@ -60,7 +74,10 @@ func run(args []string) error {
 		break
 
 	case "show":
-		commands.Show()
+		err = commands.Show()
+		if err != nil {
+			return err
+		}
 		break
 
 	default:
@@ -75,5 +92,6 @@ func run(args []string) error {
 }
 
 func main() {
-	run(os.Args)
+	err := run(os.Args)
+	checkErrorAndLogAndFail(err)
 }
