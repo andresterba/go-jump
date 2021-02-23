@@ -26,7 +26,7 @@ func TestDatabaseEntryPrint(t *testing.T) {
 		testEntry := NewEntry(tt.input.counter, tt.input.path)
 
 		if testEntry.getWritableFormat() != tt.expectedOutput {
-			t.Errorf("Writable output is not %s. got=%s", tt.expectedOutput, testEntry.getWritableFormat())
+			t.Errorf("Writable output is not '%s'. got='%s'", tt.expectedOutput, testEntry.getWritableFormat())
 		}
 	}
 }
@@ -51,7 +51,7 @@ func TestDatabaseEntryIsForPath(t *testing.T) {
 		testEntry := NewEntry(tt.input.counter, tt.input.path)
 
 		if testEntry.isForPath(tt.input.searchPath) != tt.expectedOutput {
-			t.Errorf("Expected search result is is not %t. got=%t", tt.expectedOutput, testEntry.isForPath(tt.input.searchPath))
+			t.Errorf("Expected search result is is not '%t'. got='%t'", tt.expectedOutput, testEntry.isForPath(tt.input.searchPath))
 		}
 	}
 }
