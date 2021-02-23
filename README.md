@@ -6,8 +6,8 @@ It hooks into your shell to count all visitied directories.
 The database structure is very simple:
 
 ```sh
-Counter     Path
-1337        /home/me/Code
+Counter     Path            LastVisitedTimestamp
+1337        /home/me/Code   1614115180745086516
 ```
 
 ## Usage

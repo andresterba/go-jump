@@ -4,12 +4,14 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 )
 
 // Entry represents a single record of a hit path in the database.
 type Entry struct {
-	Counter int
-	Path    string
+	Counter   int
+	Path      string
+	LastVisit time.Time
 }
 
 // NewEntry creates a new entry.
@@ -19,11 +21,17 @@ func NewEntry(counter string, path string) *Entry {
 		fmt.Println(err)
 	}
 
-	return &Entry{Counter: counterAsInt, Path: path}
+	return &Entry{Counter: counterAsInt, Path: path, LastVisit: time.Now().UTC()}
+}
+
+func (entry Entry) incrementPathCounter() {
+	entry.Counter++
+	entry.LastVisit = time.Now()
 }
 
 func (entry Entry) getWritableFormat() string {
-	return fmt.Sprintf("%d %s", entry.Counter, entry.Path)
+	lastVisitAsUnixTimestamp := strconv.FormatInt(entry.LastVisit.UnixNano(), 10)
+	return fmt.Sprintf("%d %s %s", entry.Counter, entry.Path, lastVisitAsUnixTimestamp)
 }
 
 func (entry Entry) isForPath(path string) bool {

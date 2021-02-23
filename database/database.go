@@ -77,8 +77,6 @@ func (database *Database) Persist() error {
 	}
 
 	for _, databaseEntry := range database.EntryList {
-		//fmt.Printf("%s\n", databaseEntry.getWritableFormat())
-
 		_, err = file.Write([]byte(databaseEntry.getWritableFormat() + "\n"))
 		if err != nil {
 			return ErrCouldNotWriteFile
@@ -94,7 +92,7 @@ func (database *Database) Persist() error {
 func (database *Database) AddEntry(path string) error {
 	for _, databaseEntry := range database.EntryList {
 		if databaseEntry.isForPath(path) {
-			databaseEntry.Counter++
+			databaseEntry.incrementPathCounter()
 
 			return nil
 		}
