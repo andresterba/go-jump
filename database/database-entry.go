@@ -24,7 +24,7 @@ func NewEntry(counter string, path string) *Entry {
 	return &Entry{Counter: counterAsInt, Path: path, LastVisit: time.Now().UTC()}
 }
 
-func (entry Entry) incrementPathCounter() {
+func (entry *Entry) incrementPathCounter() {
 	entry.Counter++
 	entry.LastVisit = time.Now()
 }
