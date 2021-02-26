@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -24,10 +25,22 @@ const (
 	databaseFileName = ".go-jump.db"
 )
 
+var (
+	errInputNotValid = errors.New("input is not valid")
+)
+
 // isInputValid checks if a given input contains at least
-// a single slash (which makes it a valid path).
-func isInputValid(input string) bool {
-	return strings.Contains(input, "/")
+// a single slash (which makes it a valid path) AND is not $HOME.
+func isInputValid(input string, userHomeDir string) bool {
+	if !strings.Contains(input, "/") {
+		return false
+	}
+
+	if input == userHomeDir {
+		return false
+	}
+
+	return true
 }
 
 func checkErrorAndLogAndFail(err error) {
@@ -44,12 +57,12 @@ func run(args []string) error {
 	}
 
 	command := args[1]
-	home, err := os.UserHomeDir()
+	userHomeDir, err := os.UserHomeDir()
 	if err != nil {
 		return err
 	}
 
-	commands.RegisterDatabase(home + "/" + databaseFileName)
+	commands.RegisterDatabase(userHomeDir + "/" + databaseFileName)
 
 	switch command {
 	case "add":
@@ -58,10 +71,8 @@ func run(args []string) error {
 			os.Exit(1)
 		}
 
-		// TODO: Do not add $HOME
-
 		path := args[2]
-		if isInputValid(path) {
+		if isInputValid(path, userHomeDir) {
 			err := commands.Add(path)
 			if err != nil {
 				return err
@@ -69,9 +80,6 @@ func run(args []string) error {
 
 			break
 		}
-
-		fmt.Printf("Please provide a valid input!")
-		break
 
 	case "show":
 		err = commands.ShowCurrentEntriesInDatabase()
