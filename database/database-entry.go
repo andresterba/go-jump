@@ -7,6 +7,10 @@ import (
 	"time"
 )
 
+const (
+	ErrCouldNotParseDate = "could not parse date"
+)
+
 // Entry represents a single record of a hit path in the database.
 type Entry struct {
 	Counter   int
@@ -15,13 +19,24 @@ type Entry struct {
 }
 
 // NewEntry creates a new entry.
-func NewEntry(counter string, path string) *Entry {
+func NewEntry(counter string, path string, lastVisit string) *Entry {
 	counterAsInt, err := strconv.Atoi(counter)
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	return &Entry{Counter: counterAsInt, Path: path, LastVisit: time.Now().UTC()}
+	if lastVisit == "" {
+		return &Entry{Counter: counterAsInt, Path: path, LastVisit: time.Now()}
+	}
+
+	lastVisitParsed, err := time.Parse(time.RFC3339, lastVisit)
+	if err != nil {
+		// TODO: return real errors
+		// return ErrCouldNotParseDate
+		fmt.Println(err)
+	}
+
+	return &Entry{Counter: counterAsInt, Path: path, LastVisit: lastVisitParsed}
 }
 
 func (entry *Entry) incrementPathCounter() {
@@ -30,8 +45,7 @@ func (entry *Entry) incrementPathCounter() {
 }
 
 func (entry Entry) getWritableFormat() string {
-	lastVisitAsUnixTimestamp := strconv.FormatInt(entry.LastVisit.UnixNano(), 10)
-	return fmt.Sprintf("%d %s %s", entry.Counter, entry.Path, lastVisitAsUnixTimestamp)
+	return fmt.Sprintf("%d %s %s", entry.Counter, entry.Path, entry.LastVisit.Format(time.RFC3339))
 }
 
 func (entry Entry) isForPath(path string) bool {

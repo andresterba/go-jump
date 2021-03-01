@@ -32,7 +32,7 @@ func TestDatabaseEntryListSort(t *testing.T) {
 		var entryListTest entryList
 
 		for _, inputEntry := range tt.input {
-			testEntry := NewEntry(inputEntry.counter, inputEntry.path)
+			testEntry := NewEntry(inputEntry.counter, inputEntry.path, "")
 			entryListTest = append(entryListTest, testEntry)
 		}
 

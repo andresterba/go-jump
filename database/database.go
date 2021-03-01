@@ -6,7 +6,10 @@ import (
 	"os"
 	"sort"
 	"strings"
+	"time"
 )
+
+const hoursInAYear = 8760
 
 var (
 	ErrNotFound             = errors.New("item could not be found in the store")
@@ -53,7 +56,7 @@ func (database *Database) readDatabase() error {
 		line := fileScanner.Text()
 		splittedLine := strings.Split(line, " ")
 
-		dbEntry := NewEntry(splittedLine[0], splittedLine[1])
+		dbEntry := NewEntry(splittedLine[0], splittedLine[1], splittedLine[2])
 		database.EntryList = append(database.EntryList, dbEntry)
 	}
 
@@ -98,7 +101,7 @@ func (database *Database) AddEntry(path string) error {
 		}
 	}
 
-	newDatabaseEntry := NewEntry("1", path)
+	newDatabaseEntry := NewEntry("1", path, "")
 	database.EntryList = append(database.EntryList, newDatabaseEntry)
 
 	err := database.Persist()
@@ -142,4 +145,30 @@ func (database *Database) GetAllEntriesAsString() ([]string, error) {
 
 func (database *Database) flushEntryList() {
 	database.EntryList = []*Entry{}
+}
+
+// PruneEntriesOlderOneYear prunes all images older than 1 year.
+func (database *Database) PruneEntriesOlderOneYear() error {
+	var toKeepEntries = entryList{}
+
+	currentTime := time.Now().UTC()
+
+	for _, entry := range database.EntryList {
+		timeDifferenceInHours := currentTime.Sub(entry.LastVisit).Hours()
+
+		if timeDifferenceInHours >= hoursInAYear {
+			continue
+		}
+
+		toKeepEntries = append(toKeepEntries, entry)
+	}
+
+	database.EntryList = toKeepEntries
+
+	err := database.Persist()
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -21,7 +21,7 @@ func TestDatabaseEntryIsForPath(t *testing.T) {
 
 	for _, tt := range tests {
 
-		testEntry := NewEntry(tt.input.counter, tt.input.path)
+		testEntry := NewEntry(tt.input.counter, tt.input.path, "")
 
 		if testEntry.isForPath(tt.input.searchPath) != tt.expectedOutput {
 			t.Errorf("Expected search result is is not '%t'. got='%t'", tt.expectedOutput, testEntry.isForPath(tt.input.searchPath))

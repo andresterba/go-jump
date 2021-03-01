@@ -15,9 +15,10 @@ func printHelp() {
 go-jump [command]
 
 commands:
-	* folder - search for best match for "folder"
-	* add    - add a folder to the database
-	* show   - show current database entries
+    * folder - search for best match for "folder"
+    * add    - add a folder to the database
+    * show   - show current database entries
+    * prune  - prune entries older than 1 year
 `)
 }
 
@@ -83,6 +84,13 @@ func run(args []string) error {
 
 	case "show":
 		err = commands.ShowCurrentEntriesInDatabase()
+		if err != nil {
+			return err
+		}
+		break
+
+	case "prune":
+		err = commands.Prune()
 		if err != nil {
 			return err
 		}
