@@ -20,3 +20,5 @@ localtest: build
 	cp go-jump ~/bin
 testcoverage:
 	$(GOTEST) -coverprofile coverage.out ./... && go tool cover -html=coverage.out && rm coverage.out
+lint:
+	staticcheck -f stylish github.com/andresterba/go-jump/...

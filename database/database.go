@@ -72,7 +72,7 @@ func (database *Database) Persist() error {
 
 	database.sortDatabase()
 
-	err := os.Remove(database.Path)
+	_ = os.Remove(database.Path)
 
 	file, err := os.OpenFile(database.Path, os.O_CREATE|os.O_WRONLY, 0600)
 	if err != nil {

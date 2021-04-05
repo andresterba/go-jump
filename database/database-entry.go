@@ -49,19 +49,11 @@ func (entry Entry) getWritableFormat() string {
 }
 
 func (entry Entry) isForPath(path string) bool {
-	if entry.Path == path {
-		return true
-	}
-
-	return false
+	return entry.Path == path
 }
 
 func (entry Entry) isForPathInLowerCase(path string) bool {
-	if entry.Path == strings.ToLower(path) {
-		return true
-	}
-
-	return false
+	return entry.Path == strings.ToLower(path)
 }
 
 func (entry Entry) isForPartOfThePath(path string) bool {

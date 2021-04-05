@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -24,10 +23,6 @@ commands:
 
 const (
 	databaseFileName = ".go-jump.db"
-)
-
-var (
-	errInputNotValid = errors.New("input is not valid")
 )
 
 // isInputValid checks if a given input contains at least
@@ -87,14 +82,12 @@ func run(args []string) error {
 		if err != nil {
 			return err
 		}
-		break
 
 	case "prune":
 		err = commands.Prune()
 		if err != nil {
 			return err
 		}
-		break
 
 	default:
 		foundPath, err := commands.SearchForDatabaseHit(command)
