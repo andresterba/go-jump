@@ -38,7 +38,7 @@ func (database *Database) sortDatabase() {
 }
 
 func (database *Database) readDatabase() error {
-	// Flush EntryList as we can only read or write the hole database.
+	// Flush EntryList as we can only read or write the whole database.
 	// This ensures that the entries are only read once and therefore exists only
 	// once in the database.
 	database.flushEntryList()

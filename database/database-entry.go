@@ -1,14 +1,16 @@
 package database
 
 import (
+	"errors"
 	"fmt"
+	"log"
 	"strconv"
 	"strings"
 	"time"
 )
 
-const (
-	ErrCouldNotParseDate = "could not parse date"
+var (
+	ErrCouldNotParseDate = errors.New("could not parse date")
 )
 
 // Entry represents a single record of a hit path in the database.
@@ -31,9 +33,7 @@ func NewEntry(counter string, path string, lastVisit string) *Entry {
 
 	lastVisitParsed, err := time.Parse(time.RFC3339, lastVisit)
 	if err != nil {
-		// TODO: return real errors
-		// return ErrCouldNotParseDate
-		fmt.Println(err)
+		log.Fatal(ErrCouldNotParseDate)
 	}
 
 	return &Entry{Counter: counterAsInt, Path: path, LastVisit: lastVisitParsed}
