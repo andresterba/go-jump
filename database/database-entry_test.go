@@ -17,6 +17,7 @@ func TestDatabaseEntryIsForPath(t *testing.T) {
 	}{
 		{entryInput{"1", "/home/test", "/home/test"}, true},
 		{entryInput{"1", "/home/test", "test"}, false},
+		{entryInput{"1", "/home/test with spaces", "/home/testwithspaces"}, true},
 	}
 
 	for _, tt := range tests {

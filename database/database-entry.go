@@ -27,13 +27,16 @@ func NewEntry(counter string, path string, lastVisit string) *Entry {
 		fmt.Println(err)
 	}
 
+    // Remove spaces in path name
+    path = strings.ReplaceAll(path, " ", "")
+
 	if lastVisit == "" {
 		return &Entry{Counter: counterAsInt, Path: path, LastVisit: time.Now()}
 	}
 
 	lastVisitParsed, err := time.Parse(time.RFC3339, lastVisit)
 	if err != nil {
-		log.Fatal(ErrCouldNotParseDate)
+		log.Fatalf("Could not parse date for entry %s", path)
 	}
 
 	return &Entry{Counter: counterAsInt, Path: path, LastVisit: lastVisitParsed}
